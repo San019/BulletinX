@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Home - Online Notice Board{% endblock %}
+{% block content %}
+    <h1 class="text-center mb-4">Latest Notices</h1>
+    
+    <!-- Category Filter -->
+    <div class="mb-4">
+        <form method="GET" class="d-flex justify-content-center">
+            <select name="category" class="form-select w-25 me-2" onchange="this.form.submit()">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <!-- Notices -->
+    <div class="row">
+        {% for notice in notices %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header {% if notice.category == 'Urgent' %}bg-danger text-white{% elif notice.category == 'Event' %}bg-success text-white{% else %}bg-primary text-white{% endif %}">
+                        <h5 class="card-title mb-0">{{ notice.title }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ notice.content|truncatewords:20 }}</p>
+                        <small class="text-muted">Posted by {{ notice.author }} on {{ notice.date_posted|date:"F d, Y" }}</small><br>
+                        <span class="badge {% if notice.category == 'Urgent' %}bg-danger{% elif notice.category == 'Event' %}bg-success{% else %}bg-info{% endif %}">{{ notice.category }}</span>
+                        <a href="{% url 'notice_detail' notice.pk %}" class="btn btn-sm btn-outline-primary mt-2">Read More</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No notices available in this category.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
